@@ -38,15 +38,39 @@ app.get("/api/select", (req,res) => {
     });
 });
 
-app.post("/login", (req,res) => {
+app.post("/login", (req, res) => { // 데이터 받아서 결과 전송
+    const id = req.body.id;
+    const pw = req.body.pw;
+    const sendData = { isLogin: "" };
 
-    var id = req.body.id;
-    var pw = req.body.pw;
+    if (id && pw) {             // id와 pw가 입력되었는지 확인
+        db.query('SELECT * FROM users WHERE id = ?', [id], function (error, results, fields) {
+            if (error) throw error;
+            if (results.length > 0) {       // db에서의 반환값이 있다 = 일치하는 아이디가 있다.      
 
-    const sqlQuery = "select count(*) from users where id =? and pw =?;";
+                bcrypt.compare(pw , results[0].userchn, (err, result) => {    
+// 입력된 비밀번호가 해시된 저장값과 같은 값인지 비교
 
-    db.query(sqlQuery, [id, pw], (err, result) => {
-        if (err) throw err;
-        res.send(result);
-    });
+                    if (result === true) {                  // 비밀번호가 일치하면
+                        req.session.is_logined = true;      // 세션 정보 갱신
+                        req.session.nickname = id;
+                        req.session.save(function () {
+                            sendData.isLogin = "True"
+                            res.send(sendData);
+                        });
+                    }
+                    else{                                   // 비밀번호가 다른 경우
+                        sendData.isLogin = "로그인 정보가 일치하지 않습니다."
+                        res.send(sendData);
+                    }
+                })                      
+            } else {    // db에 해당 아이디가 없는 경우
+                sendData.isLogin = "아이디 정보가 일치하지 않습니다."
+                res.send(sendData);
+            }
+        });
+    } else {            // 아이디, 비밀번호 중 입력되지 않은 값이 있는 경우
+        sendData.isLogin = "아이디와 비밀번호를 입력하세요!"
+        res.send(sendData);
+    }
 });
