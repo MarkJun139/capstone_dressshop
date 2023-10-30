@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Button, Flex } from '@chakra-ui/react';
-import { UserContext, UserContextType } from './UserContext';
+import { UserContext} from './UserContext';
 
 const UserMenu = ({ onLogout }) => {
   const { user } = useContext(UserContext);

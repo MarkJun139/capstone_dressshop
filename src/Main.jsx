@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Flex, Input, Button, Grid, Image, Text, Checkbox } from '@chakra-ui/react';
 
 const products = [
