@@ -3,19 +3,20 @@
   cursor: default;
 }
 .menuBar {
-  position: relative;
-  z-index: 1;
+  background-color: black;
+  color: white;
 }
 
-.menu {
-  position: relative;
-  z-index: 2;
+.boxStyle {
+  width: 425px;
+  border-width: 1px;
+  border-color: black;
+  border-radius: md;
+  padding: 16px;
+  margin: 16px auto;
+  overflow-x: hidden;
 }
 
-.login-form,
-.signup-form {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+.modalBody {
+  padding: 16px;
 }

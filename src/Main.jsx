@@ -1,15 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { Box, Flex, Input, Button, Grid, Image, Text, Checkbox } from '@chakra-ui/react';
 
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-  image: string;
-}
-
-const products: Product[] = [
+const products = [
   {
     id: 1,
     name: '청바지',
@@ -47,21 +39,21 @@ const products: Product[] = [
   },
 ];
 
-const Main: React.FC = () => {
+const Main = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState(products);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     filterProducts(searchValue, selectedCategories);
   }, [searchValue, selectedCategories]);
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event) => {
     setSearchValue(event.target.value);
   };
 
-  const handleCategoryChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleCategoryChange = (event) => {
     const { value, checked } = event.target;
     if (checked) {
       setSelectedCategories((prevCategories) => [...prevCategories, value]);
@@ -72,10 +64,10 @@ const Main: React.FC = () => {
     }
   };
 
-  const filterProducts = (value: string, categories: string[]) => {
+  const filterProducts = (value, categories) => {
     setLoading(true);
     setTimeout(() => {
-      let filtered: Product[];
+      let filtered;
       if (categories.length === 0) {
         filtered = products;
       } else {
@@ -102,13 +94,13 @@ const Main: React.FC = () => {
           mr={2}
         />
         <Button
-                  colorScheme="teal"
-                  size="lg"
-                  bg="white"
-                  border="1px"
-                  borderColor="black"
-                  color="black"
-                >
+          colorScheme="teal"
+          size="lg"
+          bg="white"
+          border="1px"
+          borderColor="black"
+          color="black"
+        >
           검색
         </Button>
       </Flex>

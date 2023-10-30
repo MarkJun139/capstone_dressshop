@@ -8,24 +8,8 @@ import {
   Box,
   Flex,
 } from '@chakra-ui/react';
-import "./App.css";
 
-export interface CustomFormData {
-  name: string;
-  username: string;
-  password: string;
-  nickname: string;
-  email: string;
-  phoneNumber: string;
-  agreeEmail: boolean;
-}
-
-interface SignupFormProps {
-  onClose: () => void;
-  onSignup: (formData: CustomFormData) => void;
-}
-
-const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
+const SignupForm = ({ onClose, onSignup }) => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -34,10 +18,10 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [agreeEmail, setAgreeEmail] = useState(false);
-  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
+  const [passwordError, setPasswordError] = useState(undefined);
   const [isUsernameChecked, setIsUsernameChecked] = useState(false);
 
-  const formRef = useRef<HTMLFormElement>(null);
+  const formRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -53,13 +37,13 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
     };
   }, []);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     if (password !== confirmPassword) {
       setPasswordError('비밀번호가 일치하지 않습니다.');
       return;
     }
-    const formData: CustomFormData = {
+    const formData = {
       name,
       username,
       password,
@@ -71,12 +55,12 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
     onSignup(formData);
   };
 
-  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePasswordChange = (event) => {
     setPassword(event.target.value);
     setPasswordError(undefined);
   };
 
-  const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleConfirmPasswordChange = (event) => {
     setConfirmPassword(event.target.value);
     setPasswordError(undefined);
   };
@@ -99,7 +83,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
             type="text"
             placeholder="이름을 입력하세요"
             value={name}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             size="lg"
             mb={4}
           />
@@ -112,7 +96,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
               type="text"
               placeholder="아이디를 입력하세요"
               value={username}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               size="lg"
               mb={4}
               mr={2}
@@ -168,7 +152,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
             type="text"
             placeholder="닉네임을 입력하세요"
             value={nickname}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNickname(e.target.value)}
+            onChange={(e) => setNickname(e.target.value)}
             size="lg"
             mb={4}
           />
@@ -180,7 +164,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
             type="email"
             placeholder="이메일을 입력하세요"
             value={email}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
             size="lg"
             mb={4}
           />
@@ -195,7 +179,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onClose, onSignup }) => {
             type="text"
             placeholder="전화번호를 입력하세요"
             value={phoneNumber}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhoneNumber(e.target.value)}
+            onChange={(e) => setPhoneNumber(e.target.value)}
             size="lg"
             mb={4}
           />

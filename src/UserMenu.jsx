@@ -2,12 +2,8 @@ import React, { useContext } from 'react';
 import { Button, Flex } from '@chakra-ui/react';
 import { UserContext, UserContextType } from './UserContext';
 
-interface UserMenuProps {
-  onLogout: () => void; // onLogout prop 추가
-}
-
-const UserMenu: React.FC<UserMenuProps> = ({ onLogout }) => {
-  const { user } = useContext(UserContext) as UserContextType;
+const UserMenu = ({ onLogout }) => {
+  const { user } = useContext(UserContext);
 
   const handleLogout = () => {
     if (onLogout) {
@@ -34,4 +30,3 @@ const UserMenu: React.FC<UserMenuProps> = ({ onLogout }) => {
 };
 
 export default UserMenu;
-

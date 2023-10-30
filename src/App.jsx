@@ -18,19 +18,19 @@ import SignupForm from './SignupForm';
 import Main from './Main';
 import { UserProvider } from './UserContext';
 import UserMenu from './UserMenu';
-import { User } from './types';
+import './App.css';
 
 function App() {
   const [showLoginForm, setShowLoginForm] = useState(true);
   const [showSignupForm, setShowSignupForm] = useState(false);
   const [showMain, setShowMain] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
     const usernameFromSession = sessionStorage.getItem('username');
     if (usernameFromSession) {
-      const newUser: User = {
+      const newUser = {
         id: 1111,
         nickname: '체리붓세',
         username: usernameFromSession,
@@ -64,9 +64,9 @@ function App() {
     setShowMain(true);
   };
 
-  const handleLogin = (id: string, password: string) => {
+  const handleLogin = (id, password) => {
     if (id === '1111' && password === '1234') {
-      const newUser: User = {
+      const newUser = {
         id: 1111,
         nickname: '체리붓세',
         username: id,
@@ -104,7 +104,6 @@ function App() {
             justify="space-between"
             p={5}
             className="menuBar"
-            style={{ backgroundColor: 'black', color: 'white' }}
           >
             <Image
               src="/logo.png"
@@ -132,31 +131,13 @@ function App() {
           </Flex>
 
           {showLoginForm && (
-            <Box
-              w="425px"
-              borderWidth="1px"
-              borderColor="black"
-              borderRadius="md"
-              p="16px"
-              mt="16px"
-              mx="auto"
-              overflowX="hidden"
-            >
+            <Box className="boxStyle">
               <LoginForm onSignupClick={handleSignupClick} onLogin={handleLogin} />
             </Box>
           )}
 
           {showSignupForm && (
-            <Box
-              w="425px"
-              borderWidth="1px"
-              borderColor="black"
-              borderRadius="md"
-              p="16px"
-              mt="16px"
-              mx="auto"
-              overflowX="hidden"
-            >
+            <Box className="boxStyle">
               <SignupForm onClose={handleLoginClick} onSignup={() => {}} />
             </Box>
           )}
@@ -168,7 +149,7 @@ function App() {
             <ModalContent>
               <ModalHeader>로그아웃</ModalHeader>
               <ModalCloseButton />
-              <ModalBody>로그아웃 하시겠습니까?</ModalBody>
+              <ModalBody className="modalBody">로그아웃 하시겠습니까?</ModalBody>
               <ModalFooter>
                 <Button colorScheme="red" mr={3} onClick={handleLogout}>
                   확인

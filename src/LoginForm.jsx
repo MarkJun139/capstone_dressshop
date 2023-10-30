@@ -11,18 +11,13 @@ import {
   AlertIcon,
 } from '@chakra-ui/react';
 
-interface LoginFormProps {
-  onSignupClick: () => void;
-  onLogin: (id: string, password: string) => void; // onLogin prop 추가
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onSignupClick, onLogin }) => {
+const LoginForm = ({ onSignupClick, onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showUsernameAlert, setShowUsernameAlert] = useState(false);
   const [showPasswordAlert, setShowPasswordAlert] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     setShowUsernameAlert(false);
     setShowPasswordAlert(false);
@@ -37,7 +32,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignupClick, onLogin }) => {
       return;
     }
 
-    onLogin(username, password); // onLogin 호출
+    onLogin(username, password);
   };
 
   return (
@@ -49,9 +44,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignupClick, onLogin }) => {
             type="text"
             placeholder="아이디를 입력하세요"
             value={username}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setUsername(e.target.value)
-            }
+            onChange={(e) => setUsername(e.target.value)}
             size="lg"
             mb={4}
           />
@@ -70,9 +63,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSignupClick, onLogin }) => {
             type="password"
             placeholder="비밀번호를 입력하세요"
             value={password}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPassword(e.target.value)
-            }
+            onChange={(e) => setPassword(e.target.value)}
             size="lg"
             mb={4}
           />
