@@ -1,5 +1,4 @@
-import bcrypt from "bcrypt";
-
+const bcrypt = require("bcrypt");
 const express = require("express");
 const cors = require("cors");
 const mysql = require("mysql");
@@ -23,7 +22,7 @@ db.query('select * from users', (err, rows) => {
 app.use(cors({
     origin: "*",
     credentials: true,
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: 200
 }))
 
 app.use(express.urlencoded({ extended: true}))

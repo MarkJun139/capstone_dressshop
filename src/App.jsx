@@ -30,22 +30,44 @@ function App() {
   useEffect(() => {
     const usernameFromSession = sessionStorage.getItem('username');
     if (usernameFromSession) {
-      const newUser = {
-        id: 1111,
-        nickname: '체리붓세',
-        username: usernameFromSession,
-      };
-      setUser(newUser);
-      setShowMain(true);
-      setShowLoginForm(false);
-      setShowSignupForm(false);
+      fetchData(usernameFromSession);
     } else {
       setShowMain(false);
       setShowLoginForm(true);
       setShowSignupForm(false);
     }
   }, []);
-  
+
+  const fetchData = async (username) => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/select?username=${username}`, {
+        credentials: 'include',
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const foundUser = data.find((user) => user.username === username);
+        if (foundUser) {
+          const newUser = {
+            id: foundUser.id,
+            nickname: foundUser.nickname,
+            username: foundUser.username,
+          };
+          setUser(newUser);
+          setShowMain(true);
+          setShowLoginForm(false);
+          setShowSignupForm(false);
+        } else {
+          handleLogout();
+        }
+      } else {
+        throw new Error('HTTP 요청 실패');
+      }
+    } catch (error) {
+      console.error(error);
+      handleLogout();
+    }
+  };
+
   const handleLoginClick = () => {
     setShowLoginForm(true);
     setShowSignupForm(false);
@@ -64,18 +86,41 @@ function App() {
     setShowMain(true);
   };
 
-  const handleLogin = (id, password) => {
-    if (id === '1111' && password === '1234') {
-      const newUser = {
-        id: 1111,
-        nickname: '체리붓세',
-        username: id,
-      };
-      setUser(newUser);
-      sessionStorage.setItem('username', id);
-      setShowMain(true);
-      setShowLoginForm(false);
-      setShowSignupForm(false);
+  const handleLogin = async (id, password) => {
+    try {
+      const response = await fetch('http://localhost:3001/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, pw: password }),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.isLogin === 'True') {
+          const newUser = {
+            id: data.id,
+            nickname: data.nickname,
+            username: data.username,
+          };
+          setUser(newUser);
+          sessionStorage.setItem('username', newUser.username);
+          setShowMain(true);
+          setShowLoginForm(false);
+          setShowSignupForm(false);
+        } else if (data.isLogin === '아이디 정보가 일치하지 않습니다.') {
+          alert('해당 아이디가 없습니다.');
+        } else {
+          alert('비밀번호가 틀렸습니다.');
+        }
+      } else {
+        throw new Error('HTTP 요청 실패');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('로그인 중 오류가 발생했습니다.');
     }
   };
 
@@ -99,12 +144,7 @@ function App() {
     <UserProvider>
       <ChakraProvider>
         <div style={{ minHeight: '100vh' }}>
-          <Flex
-            align="center"
-            justify="space-between"
-            p={5}
-            className="menuBar"
-          >
+          <Flex align="center" justify="space-between" p={5} className="menuBar">
             <Image
               src="/logo.png"
               alt="로고"
@@ -114,8 +154,8 @@ function App() {
             />
 
             <Box>
-              { user && <UserMenu onLogout={handleLogoutModalOpen} />}
-              { !user && (
+              {user && <UserMenu onLogout={handleLogoutModalOpen} />}
+              {!user && (
                 <Button
                   colorScheme="white"
                   variant="outline"
