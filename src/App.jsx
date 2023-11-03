@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ChakraProvider,
   Box,
@@ -27,46 +27,6 @@ function App() {
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  useEffect(() => {
-    const usernameFromSession = sessionStorage.getItem('username');
-    if (usernameFromSession) {
-      fetchData(usernameFromSession);
-    } else {
-      setShowMain(false);
-      setShowLoginForm(true);
-      setShowSignupForm(false);
-    }
-  }, []);
-
-  const fetchData = async (username) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/select?username=${username}`, {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const foundUser = data.find((user) => user.username === username);
-        if (foundUser) {
-          const newUser = {
-            id: foundUser.id,
-            nickname: foundUser.nickname,
-            username: foundUser.username,
-          };
-          setUser(newUser);
-          setShowMain(true);
-          setShowLoginForm(false);
-          setShowSignupForm(false);
-        } else {
-          handleLogout();
-        }
-      } else {
-        throw new Error('HTTP 요청 실패');
-      }
-    } catch (error) {
-      console.error(error);
-      handleLogout();
-    }
-  };
 
   const handleLoginClick = () => {
     setShowLoginForm(true);
