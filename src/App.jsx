@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ChakraProvider,
   Box,
@@ -27,44 +27,38 @@ function App() {
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  useEffect(() => {
-    const usernameFromSession = sessionStorage.getItem('username');
-    if (usernameFromSession) {
-      fetchData(usernameFromSession);
-    } else {
-      setShowMain(false);
-      setShowLoginForm(true);
-      setShowSignupForm(false);
-    }
-  }, []);
-
-  const fetchData = async (username) => {
+  const handleLogin = async (id, password) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/select?username=${username}`, {
+      const response = await fetch('http://localhost:3001/login', { // 서버 주소로 변경
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, pw: password }),
         credentials: 'include',
       });
+
       if (response.ok) {
         const data = await response.json();
-        const foundUser = data.find((user) => user.username === username);
-        if (foundUser) {
+        if (data.isLogin === 'True') {
           const newUser = {
-            id: foundUser.id,
-            nickname: foundUser.nickname,
-            username: foundUser.username,
+            id: data.id,
+            nickname: data.nickname,
+            username: data.username,
           };
           setUser(newUser);
-          setShowMain(true);
-          setShowLoginForm(false);
-          setShowSignupForm(false);
+          sessionStorage.setItem('username', newUser.username);
+        } else if (data.isLogin === '아이디 정보가 일치하지 않습니다.') {
+          alert('해당 아이디가 없습니다.');
         } else {
-          handleLogout();
+          alert('비밀번호가 틀렸습니다.');
         }
       } else {
         throw new Error('HTTP 요청 실패');
       }
     } catch (error) {
       console.error(error);
-      handleLogout();
+      alert('로그인 중 오류가 발생했습니다.');
     }
   };
 
@@ -84,44 +78,6 @@ function App() {
     setShowLoginForm(false);
     setShowSignupForm(false);
     setShowMain(true);
-  };
-
-  const handleLogin = async (id, password) => {
-    try {
-      const response = await fetch('http://localhost:3001/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id, pw: password }),
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.isLogin === 'True') {
-          const newUser = {
-            id: data.id,
-            nickname: data.nickname,
-            username: data.username,
-          };
-          setUser(newUser);
-          sessionStorage.setItem('username', newUser.username);
-          setShowMain(true);
-          setShowLoginForm(false);
-          setShowSignupForm(false);
-        } else if (data.isLogin === '아이디 정보가 일치하지 않습니다.') {
-          alert('해당 아이디가 없습니다.');
-        } else {
-          alert('비밀번호가 틀렸습니다.');
-        }
-      } else {
-        throw new Error('HTTP 요청 실패');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('로그인 중 오류가 발생했습니다.');
-    }
   };
 
   const handleLogout = () => {
