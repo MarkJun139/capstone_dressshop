@@ -20,12 +20,15 @@ db.query('select * from users', (err, rows) => {
   });
 
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     credentials: true,
     optionsSuccessStatus: 200
 }));
 
-res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    next();
+  });
 
 app.use(express.urlencoded({ extended: true}));
 
