@@ -25,12 +25,12 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
+app.use(express.urlencoded({ extended: true}));
+
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
     next();
   });
-
-app.use(express.urlencoded({ extended: true}));
 
 app.listen(PORT, ()=> {
     console.log(`${PORT} 포트에서 연결중`)
