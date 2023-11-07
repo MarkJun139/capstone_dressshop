@@ -20,7 +20,7 @@ db.query('select * from users', (err, rows) => {
   });
 
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     credentials: true,
     optionsSuccessStatus: 200
 }))
