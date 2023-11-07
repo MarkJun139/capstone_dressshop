@@ -20,16 +20,18 @@ db.query('select * from users', (err, rows) => {
   });
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "*",
     credentials: true,
     optionsSuccessStatus: 200
-}))
+}));
 
-app.use(express.urlencoded({ extended: true}))
+res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+
+app.use(express.urlencoded({ extended: true}));
 
 app.listen(PORT, ()=> {
     console.log(`${PORT} 포트에서 연결중`)
-})
+});
 
 app.get("/api/select", (req,res) => {
     const sqlQuery = "select * from users";
