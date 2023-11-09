@@ -7,7 +7,7 @@ export const UserProvider = ({ children }) => {
 
   const handleLogin = async (id, password) => {
     try {
-      const response = await fetch('http://localhost:3001/login', { // 서버 주소로 변경
+      const response = await fetch('http://3.35.206.24:3001/login', { // 서버 주소로 변경
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
