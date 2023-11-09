@@ -112,8 +112,10 @@ function App() {
           setShowSignupForm(false);
         } else if (data.isLogin === '아이디 정보가 일치하지 않습니다.') {
           alert('해당 아이디가 없습니다.');
-        } else {
+        } else if (data.isLogin === '로그인 정보가 일치하지 않습니다.') {
           alert('비밀번호가 틀렸습니다.');
+        } else {
+          alert('가 틀렸습니다.');
         }
       } else {
         throw new Error('HTTP 요청 실패');
