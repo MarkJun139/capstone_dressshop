@@ -80,7 +80,3 @@ app.post("/login", (req, res) => { // 데이터 받아서 결과 전송
         res.send(sendData);
     }
 });
-
-app.listen(port, '0.0.0.0', function() {
-    console.log(`Server is running on port ${port}`);
-});
