@@ -1,15 +1,27 @@
 const bcrypt = require("bcrypt");
 const express = require("express");
+const session = require('express-session');
 const cors = require("cors");
 const mysql = require("mysql");
 const app = express();
 const PORT = 3001;
+const saltRounds = 10;
+
+app.use(session({
+    secret: 'temporary-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      maxAge: 60 * 60 * 1000, // 1 hour
+    },
+  }));
 
 const db = mysql.createConnection({
     host: "127.0.0.1",
     user: "shop",
     password: "shop",
     database: "shop",
+    port:3307
 });
 
 db.connect();
@@ -25,7 +37,8 @@ app.use(cors({
     optionsSuccessStatus: 200
 }));
 
-app.use(express.urlencoded({ extended: true}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -48,22 +61,29 @@ app.post("/login", (req, res) => { // 데이터 받아서 결과 전송
     const id = req.body.id;
     const pw = req.body.pw;
     const sendData = { isLogin: "" };
+    console.log(id,pw);
+    bcrypt.hash(pw, saltRounds, function(err, hash) {
+        console.log(hash);
+    });
 
     if (id && pw) {             // id와 pw가 입력되었는지 확인
-        db.query('SELECT * FROM users WHERE id = ?', [id], function (error, results, fields) {
+        db.query('SELECT * FROM users WHERE uId = ?', [id], function (error, results, fields) {
             if (error) throw error;
             if (results.length > 0) {       // db에서의 반환값이 있다 = 일치하는 아이디가 있다.      
 
-                bcrypt.compare(pw , results[0].userchn, (err, result) => {    
+                bcrypt.compare(pw , results[0].uPw, (err, result) => {    
 // 입력된 비밀번호가 해시된 저장값과 같은 값인지 비교
 
                     if (result === true) {                  // 비밀번호가 일치하면
+                        //세션부분 주석처리
                         req.session.is_logined = true;      // 세션 정보 갱신
                         req.session.nickname = id;
                         req.session.save(function () {
                             sendData.isLogin = "True"
                             res.send(sendData);
                         });
+                        // sendData.isLogin = "True"
+                        // res.send(sendData);
                     }
                     else{                                   // 비밀번호가 다른 경우
                         sendData.isLogin = "로그인 정보가 일치하지 않습니다."

@@ -32,15 +32,15 @@ function App() {
     if (usernameFromSession) {
       fetchData(usernameFromSession);
     } else {
-      setShowMain(false);
-      setShowLoginForm(true);
+      setShowMain(true);
+      setShowLoginForm(false);
       setShowSignupForm(false);
     }
   }, []);
 
   const fetchData = async (username) => {
     try {
-      const response = await fetch(`http://3.35.206.24:3001/api/select?username=${username}`, {
+      const response = await fetch(`http://localhost:3001/api/select?username=${username}`, {
         credentials: 'include',
       });
       if (response.ok) {
@@ -86,19 +86,21 @@ function App() {
     setShowMain(true);
   };
 
-  const handleLogin = async (id, password) => {
+  const handleLogin = async (username, password) => {
     try {
+      console.log(username, password);
       const response = await fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, pw: password }),
+        body: JSON.stringify({ id: username, pw: password }),
         credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
+        
         if (data.isLogin === 'True') {
           const newUser = {
             id: data.id,
@@ -115,7 +117,7 @@ function App() {
         } else if (data.isLogin === '로그인 정보가 일치하지 않습니다.') {
           alert('비밀번호가 틀렸습니다.');
         } else {
-          alert('가 틀렸습니다.');
+          alert(data.isLogin);
         }
       } else {
         throw new Error('HTTP 요청 실패');

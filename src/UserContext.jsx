@@ -5,14 +5,14 @@ export const UserContext = createContext(null);
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const handleLogin = async (id, password) => {
+  const handleLogin = async (username, password) => {
     try {
       const response = await fetch('http://3.35.206.24:3001/login', { // 서버 주소로 변경
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id, pw: password }),
+        body: JSON.stringify({ username, pw: password }),
         credentials: 'include',
       });
 
