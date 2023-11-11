@@ -13,7 +13,7 @@ const UserMenu = ({ onLogout }) => {
 
   return (
     <Flex align="center">
-      <span>{user?.nickname}</span>
+      <span>{user && user.nickname}님</span>
       <Button
         colorScheme="white"
         variant="outline"

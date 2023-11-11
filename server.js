@@ -12,7 +12,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: 60 * 60 * 1000,
     },
   }));
 
@@ -21,7 +21,7 @@ const db = mysql.createConnection({
     user: "shop",
     password: "shop",
     database: "shop",
-    port:3307
+    port:3307 //DB포트만 바꿔서 테스트
 });
 
 db.connect();
@@ -57,46 +57,73 @@ app.get("/api/select", (req,res) => {
     });
 });
 
-app.post("/login", (req, res) => { // 데이터 받아서 결과 전송
+app.post("/api/session", (req, res) => {
+    if (req.session.is_logined) {
+        res.send({ 
+            session: {
+                is_logined: req.session.is_logined,
+                nickname: req.session.nickname 
+            }
+        });
+    } else {
+        res.send({ 
+            session: {
+                is_logined: req.session.is_logined,
+            }
+        });
+    }
+});
+
+
+app.post("/login", (req, res) => { 
     const id = req.body.id;
     const pw = req.body.pw;
     const sendData = { isLogin: "" };
-    console.log(id,pw);
-    bcrypt.hash(pw, saltRounds, function(err, hash) {
-        console.log(hash);
-    });
 
-    if (id && pw) {             // id와 pw가 입력되었는지 확인
+    if (id && pw) { 
         db.query('SELECT * FROM users WHERE uId = ?', [id], function (error, results, fields) {
             if (error) throw error;
-            if (results.length > 0) {       // db에서의 반환값이 있다 = 일치하는 아이디가 있다.      
-
-                bcrypt.compare(pw , results[0].uPw, (err, result) => {    
-// 입력된 비밀번호가 해시된 저장값과 같은 값인지 비교
-
-                    if (result === true) {                  // 비밀번호가 일치하면
-                        //세션부분 주석처리
-                        req.session.is_logined = true;      // 세션 정보 갱신
-                        req.session.nickname = id;
+            if (results.length > 0) {
+                bcrypt.compare(pw , results[0].uPw, (err, result) => { 
+                    if (result === true) { 
+                        req.session.is_logined = true; 
+                        req.session.nickname = results[0].uNick; // 데이터베이스의 uNick 컬럼 값으로 변경
                         req.session.save(function () {
                             sendData.isLogin = "True"
+                            sendData.session = req.session;
                             res.send(sendData);
                         });
-                        // sendData.isLogin = "True"
-                        // res.send(sendData);
                     }
-                    else{                                   // 비밀번호가 다른 경우
+                    else{ 
                         sendData.isLogin = "로그인 정보가 일치하지 않습니다."
                         res.send(sendData);
                     }
                 })                      
-            } else {    // db에 해당 아이디가 없는 경우
+            } else {  
                 sendData.isLogin = "아이디 정보가 일치하지 않습니다."
                 res.send(sendData);
             }
         });
-    } else {            // 아이디, 비밀번호 중 입력되지 않은 값이 있는 경우
+    } else { 
         sendData.isLogin = "아이디와 비밀번호를 입력하세요!"
         res.send(sendData);
+    }    
+});
+
+app.post("/logout", (req, res) => {
+    if (req.session) {
+        // 세션 삭제
+        req.session.destroy(function(err) {
+            if (err) {
+                // 에러 처리
+                console.log(err);
+            } else {
+                // 세션 삭제 후 응답을 보냅니다.
+                res.send({ status: "Logged out" });
+            }
+        });
+    } else {
+        // 세션이 존재하지 않는 경우
+        res.send({ status: "No active session" });
     }
 });

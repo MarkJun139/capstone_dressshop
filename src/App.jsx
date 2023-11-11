@@ -21,52 +21,41 @@ import UserMenu from './UserMenu';
 import './App.css';
 
 function App() {
-  const [showLoginForm, setShowLoginForm] = useState(true);
+  const [showLoginForm, setShowLoginForm] = useState(false);
   const [showSignupForm, setShowSignupForm] = useState(false);
-  const [showMain, setShowMain] = useState(false);
+  const [showMain, setShowMain] = useState(true);
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   useEffect(() => {
-    const usernameFromSession = sessionStorage.getItem('username');
-    if (usernameFromSession) {
-      fetchData(usernameFromSession);
-    } else {
-      setShowMain(true);
-      setShowLoginForm(false);
-      setShowSignupForm(false);
-    }
-  }, []);
+    const fetchSession = async () => {
+      try {
+        const response = await fetch('http://localhost:3001/api/session', {
+          method: 'POST',
+          credentials: 'include', // 쿠키 정보를 보내기 위해 필요합니다.
+        });
 
-  const fetchData = async (username) => {
-    try {
-      const response = await fetch(`http://localhost:3001/api/select?username=${username}`, {
-        credentials: 'include',
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const foundUser = data.find((user) => user.username === username);
-        if (foundUser) {
-          const newUser = {
-            id: foundUser.id,
-            nickname: foundUser.nickname,
-            username: foundUser.username,
-          };
-          setUser(newUser);
-          setShowMain(true);
-          setShowLoginForm(false);
-          setShowSignupForm(false);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.session && data.session.is_logined) {
+            const newUser = {
+              nickname: data.session.nickname
+            };
+            setUser(newUser);
+            setShowMain(true);
+            setShowLoginForm(false);
+            setShowSignupForm(false);
+          }
         } else {
-          handleLogout();
+          throw new Error('HTTP 요청 실패');
         }
-      } else {
-        throw new Error('HTTP 요청 실패');
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-      handleLogout();
-    }
-  };
+    };
+
+    fetchSession(); // useEffect에서 fetchSession 함수를 호출합니다.
+  }, []);
 
   const handleLoginClick = () => {
     setShowLoginForm(true);
@@ -88,7 +77,6 @@ function App() {
 
   const handleLogin = async (username, password) => {
     try {
-      console.log(username, password);
       const response = await fetch('http://localhost:3001/login', {
         method: 'POST',
         headers: {
@@ -103,15 +91,10 @@ function App() {
         
         if (data.isLogin === 'True') {
           const newUser = {
-            id: data.id,
-            nickname: data.nickname,
-            username: data.username,
+            nickname: data.session.nickname
           };
           setUser(newUser);
-          sessionStorage.setItem('username', newUser.username);
-          setShowMain(true);
-          setShowLoginForm(false);
-          setShowSignupForm(false);
+          window.location.reload();
         } else if (data.isLogin === '아이디 정보가 일치하지 않습니다.') {
           alert('해당 아이디가 없습니다.');
         } else if (data.isLogin === '로그인 정보가 일치하지 않습니다.') {
@@ -128,13 +111,41 @@ function App() {
     }
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    sessionStorage.removeItem('username');
-    setShowLogoutModal(false);
-    setShowMain(false);
-    setShowLoginForm(true);
+  useEffect(() => {
+    if (user) {
+      setShowMain(true);
+      setShowLoginForm(false);
+      setShowSignupForm(false);
+    }
+  }, [user]);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+  
+        if (data.status === 'Logged out') {
+          setUser(null);
+          setShowLogoutModal(false);
+          setShowMain(false);
+          setShowLoginForm(true);
+        } else {
+          throw new Error('로그아웃 실패');
+        }
+      } else {
+        throw new Error('HTTP 요청 실패');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('로그아웃 중 오류가 발생했습니다.');
+    }
   };
+  
 
   const handleLogoutModalOpen = () => {
     setShowLogoutModal(true);
@@ -145,7 +156,7 @@ function App() {
   };
 
   return (
-    <UserProvider>
+    <UserProvider value={{ user, logout: handleLogout }}>
       <ChakraProvider>
         <div style={{ minHeight: '100vh' }}>
           <Flex align="center" justify="space-between" p={5} className="menuBar">

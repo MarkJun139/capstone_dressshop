@@ -21,7 +21,6 @@ const LoginForm = ({ onSignupClick, onLogin }) => {
     event.preventDefault();
     setShowUsernameAlert(false);
     setShowPasswordAlert(false);
-    console.log(username, password);
 
     if (!username) {
       setShowUsernameAlert(true);
