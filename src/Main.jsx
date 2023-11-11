@@ -86,6 +86,7 @@ const Main = () => {
     <Box p={4}>
       <Flex align="center" mb={4}>
         <Input
+          id="serch"
           type="text"
           placeholder="검색어를 입력하세요"
           value={searchValue}
@@ -111,6 +112,7 @@ const Main = () => {
         </Text>
         <Flex flexWrap="wrap">
           <Checkbox
+            id="pants"
             value="바지"
             onChange={handleCategoryChange}
             isChecked={selectedCategories.includes('바지')}
@@ -121,6 +123,7 @@ const Main = () => {
             바지
           </Checkbox>
           <Checkbox
+            id="top"
             value="상의"
             onChange={handleCategoryChange}
             isChecked={selectedCategories.includes('상의')}
@@ -131,6 +134,7 @@ const Main = () => {
             상의
           </Checkbox>
           <Checkbox
+            id="onepiece"
             value="원피스"
             onChange={handleCategoryChange}
             isChecked={selectedCategories.includes('원피스')}
@@ -141,6 +145,7 @@ const Main = () => {
             원피스
           </Checkbox>
           <Checkbox
+            id="skirt"
             value="스커트"
             onChange={handleCategoryChange}
             isChecked={selectedCategories.includes('스커트')}

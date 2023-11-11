@@ -62,6 +62,7 @@ const LoginForm = ({ onSignupClick, onLogin }) => {
           <Input
             type="password"
             placeholder="비밀번호를 입력하세요"
+            autoComplete="off"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             size="lg"

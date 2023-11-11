@@ -9,9 +9,9 @@ import {
   Flex,
 } from '@chakra-ui/react';
 
-const SignupForm = ({ onClose, onSignup }) => {
+const SignupForm = ({ onSignup }) => {
   const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
+  const [id, setId] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nickname, setNickname] = useState('');
@@ -19,7 +19,7 @@ const SignupForm = ({ onClose, onSignup }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [agreeEmail, setAgreeEmail] = useState(false);
   const [passwordError, setPasswordError] = useState(undefined);
-  const [isUsernameChecked, setIsUsernameChecked] = useState(false);
+  const [isIdChecked, setIsIdChecked] = useState(false);
 
   const formRef = useRef(null);
 
@@ -43,15 +43,20 @@ const SignupForm = ({ onClose, onSignup }) => {
       setPasswordError('비밀번호가 일치하지 않습니다.');
       return;
     }
+    if (!isIdChecked) {
+      alert('아이디 중복 체크를 진행해주세요.');
+      return;
+    }
     const formData = {
       name,
-      username,
+      id,
       password,
       nickname,
       email,
       phoneNumber,
       agreeEmail,
     };
+    console.log(formData);
     onSignup(formData);
   };
 
@@ -69,9 +74,9 @@ const SignupForm = ({ onClose, onSignup }) => {
     password.length >= 8 &&
     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]+$/.test(password);
 
-  const handleUsernameCheck = () => {
+  const handleIdCheck = () => {
     // 중복 체크 로직 추가
-    setIsUsernameChecked(true);
+    setIsIdChecked(true);
   };
 
   return (
@@ -80,8 +85,10 @@ const SignupForm = ({ onClose, onSignup }) => {
         <FormControl>
           <FormLabel>이름</FormLabel>
           <Input
+            id="name-field"
             type="text"
             placeholder="이름을 입력하세요"
+            autoComplete="off"
             value={name}
             onChange={(e) => setName(e.target.value)}
             size="lg"
@@ -93,10 +100,12 @@ const SignupForm = ({ onClose, onSignup }) => {
           <FormLabel>아이디</FormLabel>
           <Flex>
             <Input
+              id="id-field"
               type="text"
               placeholder="아이디를 입력하세요"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              autoComplete="off"
+              value={id}
+              onChange={(e) => setId(e.target.value)}
               size="lg"
               mb={4}
               mr={2}
@@ -104,8 +113,8 @@ const SignupForm = ({ onClose, onSignup }) => {
             <Button
               size="lg"
               colorScheme="white"
-              onClick={handleUsernameCheck}
-              disabled={isUsernameChecked}
+              onClick={handleIdCheck}
+              disabled={isIdChecked}
               variant="outline"
               _focus={{ boxShadow: 'none' }}
               _active={{ bg: 'gray.300' }}
@@ -118,8 +127,10 @@ const SignupForm = ({ onClose, onSignup }) => {
         <FormControl>
           <FormLabel>비밀번호</FormLabel>
           <Input
+            id="password-field"
             type="password"
             placeholder="비밀번호를 입력하세요"
+            autoComplete="off"
             value={password}
             onChange={handlePasswordChange}
             size="lg"
@@ -136,8 +147,10 @@ const SignupForm = ({ onClose, onSignup }) => {
         <FormControl>
           <FormLabel>비밀번호 확인</FormLabel>
           <Input
+            id="confirm-password-field"
             type="password"
             placeholder="비밀번호를 다시 입력하세요"
+            autoComplete="off"
             value={confirmPassword}
             onChange={handleConfirmPasswordChange}
             size="lg"
@@ -149,8 +162,10 @@ const SignupForm = ({ onClose, onSignup }) => {
         <FormControl>
           <FormLabel>닉네임</FormLabel>
           <Input
+            id="nickname-field"
             type="text"
             placeholder="닉네임을 입력하세요"
+            autoComplete="off"
             value={nickname}
             onChange={(e) => setNickname(e.target.value)}
             size="lg"
@@ -161,8 +176,10 @@ const SignupForm = ({ onClose, onSignup }) => {
         <FormControl>
           <FormLabel>이메일</FormLabel>
           <Input
+            id="email-field"
             type="email"
             placeholder="이메일을 입력하세요"
+            autoComplete="off"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             size="lg"
@@ -176,8 +193,10 @@ const SignupForm = ({ onClose, onSignup }) => {
         <FormControl>
           <FormLabel>전화번호</FormLabel>
           <Input
+            id="phone-number-field"
             type="text"
             placeholder="전화번호를 입력하세요"
+            autoComplete="off"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             size="lg"
@@ -191,7 +210,7 @@ const SignupForm = ({ onClose, onSignup }) => {
           colorScheme="white"
           variant="outline"
           size="sm"
-          isDisabled={!isPasswordValid}
+          isDisabled={!isPasswordValid || !isIdChecked || !phoneNumber}
           _focus={{ boxShadow: 'none' }}
           _active={{ bg: 'gray.300' }}
         >

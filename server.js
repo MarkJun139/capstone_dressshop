@@ -5,7 +5,6 @@ const cors = require("cors");
 const mysql = require("mysql");
 const app = express();
 const PORT = 3001;
-const saltRounds = 10;
 
 app.use(session({
     secret: 'temporary-secret',
