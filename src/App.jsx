@@ -18,6 +18,8 @@ import SignupForm from './SignupForm';
 import Main from './Main';
 import { UserProvider } from './UserContext';
 import UserMenu from './UserMenu';
+import ProductDetail from './ProductDetail';
+import CategorySelect from './CategorySelect';
 import './App.css';
 
 function App() {
@@ -26,25 +28,26 @@ function App() {
   const [showMain, setShowMain] = useState(true);
   const [user, setUser] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showProductDetail, setShowProductDetail] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const fetchSession = async () => {
+      // 세션 정보를 가져오는 API 호출
       try {
         const response = await fetch('http://localhost:3001/api/session', {
           method: 'POST',
-          credentials: 'include', // 쿠키 정보를 보내기 위해 필요합니다.
+          credentials: 'include',
         });
 
         if (response.ok) {
           const data = await response.json();
           if (data.session && data.session.is_logined) {
             const newUser = {
-              nickname: data.session.nickname
+              nickname: data.session.nickname,
             };
             setUser(newUser);
-            setShowMain(true);
-            setShowLoginForm(false);
-            setShowSignupForm(false);
           }
         } else {
           throw new Error('HTTP 요청 실패');
@@ -54,7 +57,7 @@ function App() {
       }
     };
 
-    fetchSession(); // useEffect에서 fetchSession 함수를 호출합니다.
+    fetchSession();
   }, []);
 
   const handleLoginClick = () => {
@@ -73,34 +76,33 @@ function App() {
     setShowLoginForm(false);
     setShowSignupForm(false);
     setShowMain(true);
+    setSelectedProduct(null);
+    setShowProductDetail(false);
   };
 
   const handleLogin = async (username, password) => {
     try {
-      const response = await fetch('http://localhost:3001/login', {
+      // 로그인 API 호출
+      const response = await fetch('http://localhost:3001/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ id: username, pw: password }),
+        body: JSON.stringify({ username, password }),
         credentials: 'include',
       });
 
       if (response.ok) {
         const data = await response.json();
-        
-        if (data.isLogin === 'True') {
+        if (data.success) {
           const newUser = {
-            nickname: data.session.nickname
+            nickname: data.nickname,
           };
           setUser(newUser);
-          window.location.reload();
-        } else if (data.isLogin === '아이디 정보가 일치하지 않습니다.') {
-          alert('해당 아이디가 없습니다.');
-        } else if (data.isLogin === '로그인 정보가 일치하지 않습니다.') {
-          alert('비밀번호가 틀렸습니다.');
+          setShowLoginForm(false);
+          setShowMain(true);
         } else {
-          alert(data.isLogin);
+          alert(data.message);
         }
       } else {
         throw new Error('HTTP 요청 실패');
@@ -111,29 +113,21 @@ function App() {
     }
   };
 
-  useEffect(() => {
-    if (user) {
-      setShowMain(true);
-      setShowLoginForm(false);
-      setShowSignupForm(false);
-    }
-  }, [user]);
-
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:3001/logout', {
+      // 로그아웃 API 호출
+      const response = await fetch('http://localhost:3001/api/logout', {
         method: 'POST',
         credentials: 'include',
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-  
-        if (data.status === 'Logged out') {
+        if (data.success) {
           setUser(null);
           setShowLogoutModal(false);
-          setShowMain(false);
-          setShowLoginForm(true);
+          setShowMain(true);
+          setShowProductDetail(false);
         } else {
           throw new Error('로그아웃 실패');
         }
@@ -145,7 +139,17 @@ function App() {
       alert('로그아웃 중 오류가 발생했습니다.');
     }
   };
-  
+
+  const handleProductDetailClose = () => {
+    setShowMain(true);
+    setShowProductDetail(false);
+  };
+
+  const handleProductDetail = (product) => {
+    setSelectedProduct(product);
+    setShowMain(false);
+    setShowProductDetail(true);
+  };
 
   const handleLogoutModalOpen = () => {
     setShowLogoutModal(true);
@@ -153,6 +157,12 @@ function App() {
 
   const handleLogoutModalClose = () => {
     setShowLogoutModal(false);
+  };
+
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setShowProductDetail(false);
+    setShowMain(true);
   };
 
   return (
@@ -197,7 +207,27 @@ function App() {
             </Box>
           )}
 
-          {showMain && <Main />}
+          {showMain && (
+            <Flex>
+              <Box flex="2" style={{ padding: '0', margin: '0' }}>
+                <CategorySelect onSelectCategory={handleCategorySelect} />
+              </Box>
+              <Box flex="8" style={{ padding: '0', margin: '0' }}>
+                <Main selectedCategory={selectedCategory} onDetail={handleProductDetail} />
+              </Box>
+            </Flex>
+          )}
+
+          {showProductDetail && (
+            <Flex>
+              <Box flex="2" style={{ padding: '0', margin: '0' }}>
+                <CategorySelect onSelectCategory={handleCategorySelect} />
+              </Box>
+              <Box flex="8" style={{ padding: '0', margin: '0' }}>
+                <ProductDetail product={selectedProduct} onClose={handleProductDetailClose} />
+              </Box>
+            </Flex>
+          )}
 
           <Modal isOpen={showLogoutModal} onClose={handleLogoutModalClose}>
             <ModalOverlay />

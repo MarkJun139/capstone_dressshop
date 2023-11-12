@@ -20,7 +20,7 @@ const db = mysql.createConnection({
     user: "shop",
     password: "shop",
     database: "shop",
-    port:1150 //DB포트만 바꿔서 테스트
+    port:3307 //DB포트만 바꿔서 테스트
 });
 
 db.connect();
